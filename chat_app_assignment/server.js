@@ -217,4 +217,5 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Link to the awesome webpage:`);   // [New] added this for convenience so it...
     console.log(`http://localhost:${PORT}`);       // ...shows the url to our website on server startup.
+    console.log(`For VM (fill IP): http://XX.XX.XX.XX:3000`); // for VM's the address is different from localhost
 });
