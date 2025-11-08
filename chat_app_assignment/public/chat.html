@@ -62,8 +62,37 @@
             margin: 0 auto;
             background: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            
+            
         }
         
+        /*========== [New] .stats-bar ==========
+          This is the area bar at top of chat where user message counts will show.
+        */
+        .stats-bar { 
+        padding: 10px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        }
+
+        /*========== [New] .stat-pill ==========
+          These are the little oval badges that will say "bob: 4" etc.
+        */
+        .stat-pill {
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 4px 8px;
+        border-radius: 9999px;
+        border: 1px solid #c7d2fe;
+        font-weight: bold;
+        font-size: 12px;
+        }
+
+
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -156,6 +185,10 @@
     </div>
     
     <div class="chat-container">
+        <!-- [New]
+             this empty bar is where the message counts for each user will be placed (visually)
+        -->
+        <div class="stats-bar" id="statsBar" title="Messages sent by each user"></div> <!-- [New] -->
         <div class="messages" id="messages"></div>
         <div class="input-area">
             <input type="text" id="messageInput" placeholder="Type your message..." />
@@ -166,19 +199,21 @@
     <script>
         let currentUsername = '';
         let eventSource = null;
+        let currentCounts = {}; // [New] stores each user's message total so we can show it live
+
         
         // Check authentication
         async function checkAuth() {
             const response = await fetch('/check-auth');
             const data = await response.json();
-            
             if (!data.authenticated) {
                 window.location.href = '/';
             } else {
                 currentUsername = data.username;
                 document.getElementById('currentUser').textContent = `Logged in as: ${currentUsername}`;
-                loadMessages();
-                connectSSE();
+                loadMessages(); // existing history
+                await loadStats(); // [New] get the number of messages each user has sent BEFORE live updates start
+                connectSSE(); // [New] open the live connection so new messages + stats show instantly
             }
         }
         
@@ -191,6 +226,33 @@
             });
         }
         
+        // ========== [New] fn loadStats() ==========
+        // This gets the message counts from our server 1 time when page loads
+        // then we display those numbers in the stats bar
+        async function loadStats() {
+        try {
+            const r = await fetch('/stats');
+            currentCounts = await r.json();
+            renderStats(); // make the numbers show visually
+        } catch (e) {
+            console.error('Failed to load stats', e);
+        }
+        }
+        
+        // ========== [New] fn renderStats() ==========
+        // this clears the stats bar, then adds "bob:4" "john:2" etc.
+        function renderStats() {
+        const bar = document.getElementById('statsBar');
+        bar.innerHTML = '';
+        const users = Object.keys(currentCounts).sort((a, b) => a.localeCompare(b));
+        users.forEach(u => {
+            const pill = document.createElement('span');
+            pill.className = 'stat-pill';
+            pill.textContent = `${u}: ${currentCounts[u]}`;
+            bar.appendChild(pill);
+        });
+        }
+
         // Connect to Server-Sent Events
         function connectSSE() {
             eventSource = new EventSource('/events');
@@ -205,6 +267,14 @@
                 eventSource.close();
                 setTimeout(connectSSE, 3000);
             };
+
+            // [New]
+            // server also sends updated stats each time someone sends a new message
+            // this makes the numbers change instantly without refreshing
+            eventSource.addEventListener('stats', (event) => {
+            currentCounts = JSON.parse(event.data);
+            renderStats();
+            });
         }
         
         // Display message
@@ -230,8 +300,24 @@
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             
-            // ===> COMMUNICATE WITH THE SERVER -- POST text to '/messages' on server
-            
+            // [New]
+            // this sends your message text to the server so it gets saved + counted
+            if (!text) return;
+            try {
+            const resp = await fetch('/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await resp.json();
+            if (data && data.success) {
+                input.value = '';
+                input.focus();
+            }
+            } catch (e) {
+            console.error('Failed to send message', e);
+            }
+
         }
         
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
@@ -258,6 +344,7 @@
         });
         
         checkAuth();
+
     </script>
 </body>
 </html>
