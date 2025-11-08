@@ -4,9 +4,65 @@
       "username": "quentin",
       "text": "test",
       "timestamp": 1762615324828
+    },
+    {
+      "username": "quentin",
+      "text": "test2",
+      "timestamp": 1762616039899
+    },
+    {
+      "username": "quentin",
+      "text": "(message count is shown in the top left of chat window)",
+      "timestamp": 1762616081778
+    },
+    {
+      "username": "quentin",
+      "text": ".",
+      "timestamp": 1762616085817
+    },
+    {
+      "username": "quentin",
+      "text": "note: messages are retained after server restart--data persistence works :)",
+      "timestamp": 1762616165239
+    },
+    {
+      "username": "quentin",
+      "text": "sending a message from two different browser tabs under the same logged-in user account: message from tab 1",
+      "timestamp": 1762616247041
+    },
+    {
+      "username": "quentin",
+      "text": "sending a message from two different browser tabs under the same logged-in user account: message from tab 2",
+      "timestamp": 1762616249137
+    },
+    {
+      "username": "quentin",
+      "text": "testing styling for very long messages ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------",
+      "timestamp": 1762616278206
+    },
+    {
+      "username": "prof",
+      "text": "Testing message from a different user",
+      "timestamp": 1762616367341
+    },
+    {
+      "username": "prof",
+      "text": "(message tracking still works)",
+      "timestamp": 1762616379490
+    },
+    {
+      "username": "prof",
+      "text": "messages still retained after server restart",
+      "timestamp": 1762616429945
+    },
+    {
+      "username": "prof",
+      "text": "(in data.json)",
+      "timestamp": 1762616438627
     }
   ],
   "counts": {
-    "quentin": 1
+    "quentin": 8,
+    "prof": 4
   }
 }
