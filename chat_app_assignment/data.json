@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "username": "quentin",
+      "text": "test",
+      "timestamp": 1762615324828
+    }
+  ],
+  "counts": {
+    "quentin": 1
+  }
+}
