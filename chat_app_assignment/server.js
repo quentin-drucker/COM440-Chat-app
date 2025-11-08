@@ -183,13 +183,22 @@ app.get('/events', (req, res) => {
         return res.status(401).end();
     }
     
+    // ===== [New] REQUIRED SSE HEADERS =====
+    // Tell the browser this is a live event stream and to keep the HTTP
+    // connection open so it can receive new messages as they happen.
+    res.set({
+        'Content-Type': 'text/event-stream', // event stream MIME type
+        'Cache-Control': 'no-cache',         // don't cache SSE responses
+        'Connection': 'keep-alive'           // keep the TCP connection open
+    });
+    res.flushHeaders?.(); // [New] immediately send headers (helps some proxies)
+
     // ===> PUSH new client who has joined to clients // [New]:
     const clientId = Date.now() + Math.random();
     clients.push({ id: clientId, res });
 
-    // immediately send current stats so client can render counts (new)
+    // [New] Send current stats right away so the UI can render counts on connect
     res.write(`event: stats\ndata: ${JSON.stringify(messageCounts)}\n\n`);
-
 
     // Send a comment to keep connection alive
     const keepAlive = setInterval(() => {
