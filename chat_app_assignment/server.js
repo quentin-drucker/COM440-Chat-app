@@ -206,6 +206,6 @@ app.get('/events', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`Link to the awesome webpage: http://localhost:${PORT}`);   // [New] added this for convenience so it prints the url to our website on server startup.
-
+    console.log(`Link to the awesome webpage:`);   // [New] added this for convenience so it...
+    console.log(`http://localhost:${PORT}`);       // ...shows the url to our website on server startup.
 });
